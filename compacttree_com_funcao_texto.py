@@ -75,6 +75,7 @@ class CreateTree:
             search=self.nobiforca(self.nodes[0][1][k])
             #print search
             if search is not False:
+                print search
                 res.append(search)
         return res
                 
@@ -90,7 +91,7 @@ class CreateTree:
                     self.nodes             
             
             
-            
+            ###########################
     def getPredecessors(self,leafnode):
         word=""
         num_node=-1 
@@ -105,7 +106,10 @@ class CreateTree:
                         word=str(self.nodes[node][0])
                         #insere a letra na ultima posicao da lista (o texto vai do fim para o inicio)
         print word
-        
+             ############################
+                
+                
+#para saber se é biforcado ou nao, dado o no respetivo
                 
     def biforcado(self, node):
         if len(self.nodes[node][1].keys())==1:
@@ -116,7 +120,8 @@ class CreateTree:
             return True
             
         
-
+#funcao que retirao texto, dados os nos iniciais e finais do ramo em questao
+        
     def text_with_cut (self,init,final):#distancia entre nos inicial e final
         text=""
         letter=self.nodes[init][1].keys()[0]
@@ -132,7 +137,7 @@ class CreateTree:
             init_cicle_node=destin_node
         if len(self.nodes[final][1].keys())==0:
             text+="$"
-        texto=text.strip(",")
+        texto=text.strip(",")#em principio nao sera necessario uma vez que foi usada a concatenacao de strings
         if len(texto)>=2:
             return texto
         else:
@@ -141,17 +146,39 @@ class CreateTree:
         
             
             
-            
+#nodos sao eliminados na funcao anterior mas temos de ligar o no inicial ao no final            
     def encurtar(self,init,final):
-        self.nodes[init][1]={}
-        text=self.text_with_cut(init,final)        
-        self.nodes[init][1][text]=final
+        dicio={}        
+        if self.biforcado(init):
+            nos=self.getLastNodeBelow(init)
+            for leaf in nos:
+                text=self.text_with_cut(init,leaf)
+                dicio[text]=leaf
+            self.nodes[init][1]=dicio#atribuicao do dicionario ao no inicial correspondente
+        else:
+            text=self.text_with_cut(init,final)        
+            dicio[text]=final
+            self.nodes[init][1]=dicio
         
         
             
+    def getLastNodeBelow(self,node):
+        res=[]
+        if self.nodes[node][0]>=0:
+            res.append(node)#ultimo no (correspondente a uma folha)
+        else:
+            for k in self.nodes[node][1].keys():
+                newnode=self.nodes[node][1][k]
+                leafes=self.getLeafesBelow(newnode)
+                res.extend(leafes)         
+        return res
+        
             
             
-            
+    
+
+
+        
             
                     
 #criar um metodo para encurtar as folhas ate a raiz dooss nao biforcados
@@ -197,8 +224,7 @@ class CreateTree:
         
         
         
-        
-
+##############################################################3
 if __name__=='__main__':
     
     def test():
@@ -215,7 +241,7 @@ if __name__=='__main__':
         st.suffixTrieFromSeq(seq)
     #    print st.findPattern("TA")
         print st.InitialSearch()
-        print st.getPredecessors(9)#st.print_tree()       
+        #print st.getPredecessors(9)#st.print_tree()       
         
         
     test2()
