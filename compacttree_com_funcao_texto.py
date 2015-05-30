@@ -166,19 +166,48 @@ class CreateTree:
         
         
             
-    def getLastNodeBelow(self,node):
+    def getLastNodeBelow(self,node):#so aceita nos nao biforcados iniciais
         res=[]
         if self.nodes[node][0]>=0:
+           # print node
             res.append(node)#ultimo no (correspondente a uma folha)
+     #   elif len(self.nodes[node][1].keys())>1:
+            
+        elif not self.biforcado(node):
+   #for k in self.nodes[node][1].keys():
+            newnode=self.nodes[node][1].values()#lista
+          #  print newnode
+            stop=self.getLastNodeBelow(newnode[0])
+            res.extend(stop)         
         else:
-            for k in self.nodes[node][1].keys():
-                newnode=self.nodes[node][1][k]
-                leafes=self.getLastNodeBelow(newnode)
-                res.extend(leafes)         
+            res.append(node)
         return res
         
     
+   # def direct_line_to_leaf(self,node):
+        
+   #     res=[]        
+   #     if len(self.nodes[node][1].keys())==0:
+    #        #atingiu-se uma folha
+   #        res.append(node)
+   #     elif len(self.nodes[node][1].keys())>1:
+            
+        
+  #  def valida tamnho 2
+        
+        
+        
     
+    def s_to_c_tree(self):
+        for node in self.nodes.keys():
+            self.encurtar(node)
+            
+            
+       # try:
+            
+            
+        
+        
     
 
         
@@ -246,7 +275,7 @@ if __name__=='__main__':
       #  print st.InitialSearch()
         #print st.getPredecessors(9)#st.print_tree()       
         #print st.text_with_cut(6,9)
-        #print st.getLastNodeBelow(6)
-        print st.encurtar(6)
+        print st.getLastNodeBelow(1)
+       # print st.encurtar(6)
         
     test2()
