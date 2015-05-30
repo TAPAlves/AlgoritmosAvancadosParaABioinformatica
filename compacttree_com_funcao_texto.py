@@ -135,8 +135,8 @@ class CreateTree:
             destin_node=destin[0]
             del self.nodes[init_cicle_node]            
             init_cicle_node=destin_node
-        if len(self.nodes[final][1].keys())==0:
-            text+="$"
+        #if len(self.nodes[final][1].keys())==0:
+         #   text+="$"
         texto=text.strip(",")#em principio nao sera necessario uma vez que foi usada a concatenacao de strings
         if len(texto)>=2:
             return texto
@@ -147,18 +147,22 @@ class CreateTree:
             
             
 #nodos sao eliminados na funcao anterior mas temos de ligar o no inicial ao no final            
-    def encurtar(self,init,final):
+    def encurtar(self,node):
         dicio={}        
-        if self.biforcado(init):
-            nos=self.getLastNodeBelow(init)
-            for leaf in nos:
-                text=self.text_with_cut(init,leaf)
-                dicio[text]=leaf
-            self.nodes[init][1]=dicio#atribuicao do dicionario ao no inicial correspondente
-        else:
-            text=self.text_with_cut(init,final)        
-            dicio[text]=final
-            self.nodes[init][1]=dicio
+        #if self.biforcado(node):
+        nos=self.getLastNodeBelow(node)
+        for leaf in nos:
+            text=self.text_with_cut(node,leaf)
+            dicio[text]=leaf
+        #eliminar o dicionario existente    
+        self.nodes[node][1].clear()
+        for key in dicio.keys():
+            self.nodes[node][1][key]=dicio[key]
+        #atribuicao do dicionario ao no inicial correspondente
+        #else:
+         #   text=self.text_with_cut(init,final)        
+          #  dicio[text]=final
+           # self.nodes[init][1]=dicio
         
         
             
@@ -169,14 +173,13 @@ class CreateTree:
         else:
             for k in self.nodes[node][1].keys():
                 newnode=self.nodes[node][1][k]
-                leafes=self.getLeafesBelow(newnode)
+                leafes=self.getLastNodeBelow(newnode)
                 res.extend(leafes)         
         return res
         
-            
-            
     
-
+    
+    
 
         
             
@@ -240,8 +243,10 @@ if __name__=='__main__':
         st=CreateTree()
         st.suffixTrieFromSeq(seq)
     #    print st.findPattern("TA")
-        print st.InitialSearch()
+      #  print st.InitialSearch()
         #print st.getPredecessors(9)#st.print_tree()       
-        
+        #print st.text_with_cut(6,9)
+        #print st.getLastNodeBelow(6)
+        print st.encurtar(6)
         
     test2()
