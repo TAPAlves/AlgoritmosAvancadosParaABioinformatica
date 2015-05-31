@@ -150,20 +150,22 @@ class CreateTree:
     def encurtar(self,node):
         dicio={}        
         #if self.biforcado(node):
-        nos=self.getLastNodeBelow(node)
-        for leaf in nos:
-            text=self.text_with_cut(node,leaf)
-            dicio[text]=leaf
-        #eliminar o dicionario existente    
-        self.nodes[node][1].clear()
-        for key in dicio.keys():
-            self.nodes[node][1][key]=dicio[key]
+        try:
+            nos=self.getLastNodeBelow(node)
+            for stop in nos:
+                text=self.text_with_cut(node,stop)
+                dicio[text]=stop
+                #eliminar o dicionario existente    
+            self.nodes[node][1].clear()
+            for key in dicio.keys():
+                self.nodes[node][1][key]=dicio[key]
         #atribuicao do dicionario ao no inicial correspondente
         #else:
          #   text=self.text_with_cut(init,final)        
           #  dicio[text]=final
            # self.nodes[init][1]=dicio
-        
+        except:
+            return False
         
             
     def getLastNodeBelow(self,node):#so aceita nos nao biforcados iniciais
@@ -199,8 +201,15 @@ class CreateTree:
         
     
     def s_to_c_tree(self):
-        for node in self.nodes.keys():
-            self.encurtar(node)
+        num=0
+        while num is not self.num:         
+            try:
+                #ver se e bifurcado
+                se for chamar as chaves
+se nao for é mais facil
+ir encurtando                
+                
+                self.encurtar(node)
             
             
        # try:
