@@ -112,13 +112,16 @@ class CreateTree:
 #para saber se é biforcado ou nao, dado o no respetivo
                 
     def biforcado(self, node):
-        if len(self.nodes[node][1].keys())==1:
-            return False
-        elif len(self.nodes[node][1].keys())==0:
-            return -1
-        else:
-            return True
-            
+        #print len(self.nodes[node][1].keys())        
+        try:
+            if len(self.nodes[node][1].keys())>1:
+                return True
+            elif len(self.nodes[node][1].keys())==0:
+                return -1
+            else:
+                return False
+        except:
+            print "errado"
         
 #funcao que retirao texto, dados os nos iniciais e finais do ramo em questao
         
@@ -137,11 +140,11 @@ class CreateTree:
             init_cicle_node=destin_node
         #if len(self.nodes[final][1].keys())==0:
          #   text+="$"
-        texto=text.strip(",")#em principio nao sera necessario uma vez que foi usada a concatenacao de strings
-        if len(texto)>=2:
-            return texto
-        else:
-            return False
+        #texto=text.strip(",")#em principio nao sera necessario uma vez que foi usada a concatenacao de strings
+        #if len(texto)>=2:
+        return text
+        #else:
+            #return False
             
         
             
@@ -152,13 +155,18 @@ class CreateTree:
         #if self.biforcado(node):
         try:
             nos=self.getLastNodeBelow(node)
+            #print nos
             for stop in nos:
+                #print stop
                 text=self.text_with_cut(node,stop)
+                #print text
                 dicio[text]=stop
                 #eliminar o dicionario existente    
             self.nodes[node][1].clear()
             for key in dicio.keys():
+                #print key
                 self.nodes[node][1][key]=dicio[key]
+                #print self.nodes[node][1][key]
         #atribuicao do dicionario ao no inicial correspondente
         #else:
          #   text=self.text_with_cut(init,final)        
@@ -183,6 +191,7 @@ class CreateTree:
             res.extend(stop)         
         else:
             res.append(node)
+        #print res
         return res
         
     
@@ -202,24 +211,34 @@ class CreateTree:
     
     def s_to_c_tree(self):
         num=0
-        while num is not self.num:         
-            bifor=self.biforcado(num)            
+        while num is not self.num:
+            print num
+            bifor=self.biforcado(num)
+            print bifor            
             try:
-                if bifor==True:
+                if bifor:
                     for key in self.nodes[num][1].keys():
                         node=self.nodes[num][1][key]
+                        print node
                         self.encurtar(node)
-                if bifor==False:
+                if not bifor:
                     self.encurtar(num)
                 else:
                     pass
             except:
                 pass
             num+=1
-            
-    
-
         
+            
+    #ate agora faz o pretendido mas falta compor funcoes para ficarem a juntar os caracteres das bifurcacoes. 
+            #uma vez que so juntam o texto apartir do no seguinte de cada bifurcacao, 
+            #deixando um no que podia ser eliminado para tras 
+            #(fica o seguinte a bifurcacao e o final e podia ficar logo que se da a bifurcacao ligado ao final)
+#para isso tem de se adaptar a text_with_cut ou criar outra que chame essa e junte o caracter inicial ao texto que sai dessa- ter atencao que se tem de eliminar o nodo)
+        #a adaptar a funcao getlastnodebelow, uma vez que tem de permitir nos iniciais biforcados e dar um output de
+            #quais os destinos da funcao cut
+            
+            #cut (initial, path,final)#ideia
 ########################################################
 ###Algoritmo de pesquisa###
 ########################################################
@@ -229,9 +248,12 @@ class CreateTree:
 
 
     def findPattern(self,pattern):
-        pos=0
+    
         node=0
-        for pos in range(len(pattern)):
+        for pos_pad in range(len(pattern)):
+            for key in self.nodes[node][1].keys():
+                for pos_suf in range(len(key)):
+                    
             if self.nodes[node][1].has_key(pattern[pos]):
                 node=self.nodes[node][1][pattern[pos]]
                 pos+=1
@@ -274,7 +296,10 @@ if __name__=='__main__':
       #  print st.InitialSearch()
         #print st.getPredecessors(9)#st.print_tree()       
         #print st.text_with_cut(6,9)
-        print st.getLastNodeBelow(1)
-       # print st.encurtar(6)
-        
+        #print st.getLastNodeBelow(2)
+        #print st.encurtar(2)
+        print st.s_to_c_tree()
+        #print st.text_with_cut(2,5)
+       # print st.biforcado(2)
+   
     test2()
