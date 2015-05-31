@@ -248,21 +248,56 @@ class CreateTree:
 
 
     def findPattern(self,pattern):
-    
+#        pos=0        
+#        node=0
+#        for k in self.nodes[0][1].keys():
+#            if key[pos]==pattern[pos]:
+#                
+#            while not self.biforcado(node) or self.biforcado(node)==-1:
+#                for key in self.nodes[node][1].keys():
+#                    while pos<len(key):
+#                        if key[pos]==pattern[pos]:
+#                            pos+=1     
+#                        else:
+#                            return False
+#                        
+#            node=self.nodes[node][1][key]
+#                       
+#                
+#                
+#
+#      # pos_suf=0
+#        for nodes in self.nodes:
+#            
+#            for pos_pad in range(len(pattern)):
+#                for key in self.nodes[node][1].keys():
+#                    pos_suf=0
+#                    if key[0]==pattern[0]:
+#                        pos_suf+=1
+#                        
+#                        
+#                    
+#                    
+#                    
+#            if self.nodes[node][1].has_key(pattern[pos]):
+#                node=self.nodes[node][1][pattern[pos]]
+#                pos+=1
+#            else:
+#                return None
+#        return self.getLeafesBelow(node)
+        pos=0
         node=0
-        for pos_pad in range(len(pattern)):
+        while pos<len(pattern):
             for key in self.nodes[node][1].keys():
-                for pos_suf in range(len(key)):
+                lenght=len(key)
                     
-            if self.nodes[node][1].has_key(pattern[pos]):
-                node=self.nodes[node][1][pattern[pos]]
-                pos+=1
-            else:
-                return None
+                #for pos in range(len(pattern)):
+                if self.nodes[node][1].has_key(pattern[pos:pos+lenght]):
+                    node=self.nodes[node][1][pattern[pos:pos+lenght]]
+                    pos+=lenght
+                else:
+                    return None
         return self.getLeafesBelow(node)
-        
-        
-        
         
     def getLeafesBelow(self,node):
         res=[]
@@ -275,8 +310,31 @@ class CreateTree:
                 res.extend(leafes)         
         return res
         
-        
-        
+#ESTÀ A DAR ERRO E NAO PERCEBI PORQUE xD
+
+
+
+
+
+
+
+
+
+###############################################################################
+###Retirar as sequencias das bases de dados (padrão-gene) e sufixos (genoma)###
+###############################################################################        
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
 ##############################################################3
 if __name__=='__main__':
     
@@ -301,5 +359,6 @@ if __name__=='__main__':
         print st.s_to_c_tree()
         #print st.text_with_cut(2,5)
        # print st.biforcado(2)
+        print st.findPattern("")
    
     test2()
