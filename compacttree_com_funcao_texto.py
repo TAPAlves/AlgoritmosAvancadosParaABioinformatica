@@ -203,33 +203,23 @@ class CreateTree:
     def s_to_c_tree(self):
         num=0
         while num is not self.num:         
+            bifor=self.biforcado(num)            
             try:
-                #ver se e bifurcado
-                se for chamar as chaves
-se nao for é mais facil
-ir encurtando                
-                
-                self.encurtar(node)
+                if bifor==True:
+                    for key in self.nodes[num][1].keys():
+                        node=self.nodes[num][1][key]
+                        self.encurtar(node)
+                if bifor==False:
+                    self.encurtar(num)
+                else:
+                    pass
+            except:
+                pass
+            num+=1
             
-            
-       # try:
-            
-            
-        
-        
     
 
         
-            
-                    
-#criar um metodo para encurtar as folhas ate a raiz dooss nao biforcados
-#depois e so chamar aqui na funcao de cima            
-            
-            
-            
-            
-
-
 ########################################################
 ###Algoritmo de pesquisa###
 ########################################################
