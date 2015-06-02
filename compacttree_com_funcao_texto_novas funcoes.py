@@ -332,16 +332,29 @@ class CreateTree:
       
       
       
-    def get_seq_from_genome(self,fich):
-        #f=open(fich,"r+")
-        f=open(fich, 'r+') as infile:
-    sequence = SeqIO.read(infile, 'fasta')
-print sequence.id
-print fill(str(sequence.seq))
+    def get_seq_from_genome(self,especie=0,idn=0):
+        if idn==0:
+            gf=self.get_genome_file(especie)
+         #   f=open(gf+".fasta", 'r+')
+        #    sequence = SeqIO.read(f, 'fasta')
+       #     print str(sequence.seq).strip(" ")
+        elif especie==0:
+            gf=self.get_genome_file(0,idn)
+            print gf
+        f=open(gf, 'r')
+        sequence = SeqIO.read(f, 'fasta')
+        #print str(sequence.seq).strip(" ")
+        print "A sequencia usada para construir a arvore sera:\n"+str(sequence.id)#para informar qual sera a sequencia usada
+        return str(sequence.seq).strip(" ")
+        
+        
+
        
        
        
     def get_genome_file(self,especie=0,idn=0):#cria o ficheiro e da o nome a funcao anterior para retirar a sequencia do ficheiro
+        return_filename=""        
+        
         if idn==0:
             hand=Entrez.esearch(db='nucleotide',term=especie+"[ORGN]",retmax=100,retype="gb",retmode="text")
             results=Entrez.read(hand)
@@ -356,9 +369,10 @@ print fill(str(sequence.seq))
             
             
             read=SeqIO.read(handle,"fasta")
-            name=str(especie).strip(" ")
-            SeqIO.write(read, "genome_"+name+".fasta", "fasta")
+            name="genome_"+str(especie).strip(" ")+".fasta"
+            SeqIO.write(read,name, "fasta")
             handle.close()
+            return_filename+=name
   ### #         record = SeqIO.read("genome_escherichia coli.fasta", "fasta")
   ###  #        print record             
            # filename = "genome_"+especie+".gb"
@@ -366,8 +380,13 @@ print fill(str(sequence.seq))
         elif especie==0:
             handle=Entrez.efetch(db='nucleotide',rettype="fasta",retmode="text",id=idn)
             read=SeqIO.read(handle,"fasta")
-            SeqIO.write(read, "genome_"+idn+".fasta", "fasta")
+            name="genome_"+str(idn).strip(" ")+".fasta"
+            SeqIO.write(read,name,"fasta")
             handle.close()
+            return_filename+=name
+        #print return_filename
+        return return_filename
+        
 
         #f=open(filename,"w+")
         #f.write(handle.read())    
@@ -381,19 +400,106 @@ print fill(str(sequence.seq))
        
        
        
-    def search_seq_ids(self,term,db="protein"):
-        handle=Entrez.esearch(db,term)
-        record=Entrez.read(handle)
-        ids=record["IdList"]
-        return ids
+    def get_seq_from_gene(self,especie=0,idn=0):
+        if idn==0:
+            gf=self.get_genome_file(especie)
+         #   f=open(gf+".fasta", 'r+')
+        #    sequence = SeqIO.read(f, 'fasta')
+       #     print str(sequence.seq).strip(" ")
+        elif especie==0:
+            gf=self.get_genome_file(0,idn)
+            print gf
+        f=open(gf, 'r')
+        sequence = SeqIO.read(f, 'fasta')
+        #print str(sequence.seq).strip(" ")
+        print "A sequencia usada para construir a arvore sera:\n"+str(sequence.id)#para informar qual sera a sequencia usada
+        return str(sequence.seq).strip(" ")
         
-    def get_seq(self,id_number):
-        handle = Entrez.efetch(db="protein", id=id_number, retmode="text")
-        results=Entrez.read(handle)
-        sequence=results[0]["GBSeq_sequence"]
-        self.seq=sequence.upper()        
-        return self.seq
-          
+        
+
+       
+       
+       
+    def get_gene_file(self,gene=0,idn=0):#cria o ficheiro e da o nome a funcao anterior para retirar a sequencia do ficheiro
+        return_filename=""        
+        
+        if idn==0:
+            hand=Entrez.esearch(db='gene',term=gene+"[sym]",retmax=100,retype="gb",retmode="text")
+            results=Entrez.read(hand)
+            idnum=results["IdList"][0]#primeiro elemento da lista de resultados
+            print idnum
+   
+        
+            handl=Entrez.efetch(db='gene',rettype="gb",retmode="xml",id=idnum)
+            record=Entrez.read(handl)
+            #print(record[0].keys())#["Entrezgene_summary"])
+            to=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_to']#para
+
+            desde=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_from']#de
+
+            identif=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_id']['Seq-id']['Seq-id_gi']#gi
+                        
+            handle = Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=identif, seq_start=desde, seq_stop=to )
+            #print (record[0]["TSeq_defline"])
+            #print handle.read()
+            
+        #[u'Entrezgene_unique-keys', u'Entrezgene_track-info', u'Entrezgene_gene', u'Entrezgene_location', 
+            #u'Entrezgene_xtra-properties', u'Entrezgene_locus', u'Entrezgene_homology', u'Entrezgene_source', 
+         #   u'Entrezgene_type', u'Entrezgene_gene-source', u'Entrezgene_comments', u'Entrezgene_xtra-index-terms', 
+          #  u'Entrezgene_properties', u'Entrezgene_prot', u'Entrezgene_summary']   
+           
+           
+           
+            read=SeqIO.read(handle,"fasta")
+            name="gene_"+str(gene).strip(" ")+".fasta"
+            SeqIO.write(read,name, "fasta")
+            handle.close()
+            return_filename+=name
+  ### #         record = SeqIO.read("genome_escherichia coli.fasta", "fasta")
+  ###  #        print record             
+           # filename = "genome_"+especie+".gb"
+        
+        elif gene==0:
+            handl=Entrez.efetch(db='gene',rettype="gb",retmode="xml",id=idn)
+            record=Entrez.read(handl)
+            #print(record[0].keys())#["Entrezgene_summary"])
+            to=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_to']#para
+
+            desde=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_from']#de
+
+            identif=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_id']['Seq-id']['Seq-id_gi']#gi
+                        
+            handle = Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=identif, seq_start=desde, seq_stop=to )
+            #print (record[0]["TSeq_defline"])
+            #print handle.read()
+            
+        #[u'Entrezgene_unique-keys', u'Entrezgene_track-info', u'Entrezgene_gene', u'Entrezgene_location', 
+            #u'Entrezgene_xtra-properties', u'Entrezgene_locus', u'Entrezgene_homology', u'Entrezgene_source', 
+         #   u'Entrezgene_type', u'Entrezgene_gene-source', u'Entrezgene_comments', u'Entrezgene_xtra-index-terms', 
+          #  u'Entrezgene_properties', u'Entrezgene_prot', u'Entrezgene_summary']   
+           
+           
+           
+            read=SeqIO.read(handle,"fasta")
+            name="gene_"+str(idn).strip(" ")+".fasta"
+            SeqIO.write(read,name, "fasta")
+            handle.close()
+            return_filename+=name
+        #print return_filename
+      #  return return_filename
+        
+
+        #f=open(filename,"w+")
+        #f.write(handle.read())    
+        #print handle.read()
+        #return record["IdList"]#especie
+        #rint record
+        
+    
+        
+        
+       
+
       
       
       
@@ -431,6 +537,6 @@ if __name__=='__main__':
        # print st.pesquisa_genoma()
         #a=Entrez.einfo()
         #print (Entrez.read(a))
-        print st.get_genome_file("escherichia coli[ORGN]")
-       #print st.get_seq_from_genome("genome_escherichia coli.gb")
+        #print st.get_genome_file("escherichia coli")
+        print st.get_gene_file("idh1")
     test2()
