@@ -152,7 +152,7 @@ class CreateTree:
                 
         #if len(self.nodes[final][1].keys())==0:
         elif len(keys)==1:
-            text+=key[0]
+            text+=keys[0]
             next_node=self.nodes[init][1][keys[0]]
      #########       del self.nodes[init]#apaga o no inicial
             while next_node!=final:
@@ -166,30 +166,39 @@ class CreateTree:
          #   text+="$"
         #texto=text.strip(",")#em principio nao sera necessario uma vez que foi usada a concatenacao de strings
         #if len(texto)>=2:
+        #if self.text_with_cut(init,final))=="s:
         return text
         #else:
-            #return False
+            #return self.nodes[init][1].keys[0]
             
         
             
             
 #nodos sao eliminados na funcao anterior mas temos de ligar o no inicial ao no final            
-    def encurtar(self,node):
+    def encurtar(self,nod):
         dicio={}        
         #if self.biforcado(node):
         try:
-            nos=self.getLastNodeBelow_main(node)
+            nos=self.getLastNodeBelow_main(nod)
             #print nos
             for stop in range(len(nos)):
-                #print stop
-                text=self.text_with_cut(node,nos[stop])
+                
+                print nos[stop]
+                print nod
+                text=self.text_with_cut(nod,nos[stop])
+                #print nod                
+                #print nos[stop]
                 #print text
+                #if text not False:                
                 dicio[text]=nos[stop]
+                #else:
+                    #dicio[node][1][]
                 #eliminar o dicionario existente    
-            self.nodes[node][1].clear()
+            self.nodes[nod][1].clear()
+            
             for key in dicio.keys():
                 #print key
-                self.nodes[node][1][key]=dicio[key]
+                self.nodes[nod][1][key]=dicio[key]
                 #print self.nodes[node][1][key]
         #atribuicao do dicionario ao no inicial correspondente
         #else:
@@ -355,7 +364,7 @@ class CreateTree:
                 print 'o padrao foi encontrado na sua totalidade na sequencia'                
                 
                 return posic
-        
+    
         
         
     def getLeafesBelow(self,node):
@@ -605,7 +614,20 @@ if __name__=='__main__':
         seq="TACT"
         st=CreateTree()
         st.suffixTrieFromSeq(seq)
-        print(st.biforcado(2))
+        #print(st.biforcado(2))##
+        #print st.text_with_cut(1,13)##
+        #print st.print_tree()##corta bem os ficheiros 
+        #print st.encurtar(1)
+        #print st.print_tree()
+        #print type('drt')
+        #print st.getLastNodeBelow(5)
+        #print st.getLastNodeBelow_main(1)
+        #st.s_to_c_tree()
+        #print st.print_tree()
+        #print st.findPattern('TA')
+        #print st.getLeafesBelow(1)
+        #print st.get_genome_file('escherichia coli')
+        
         
         
     test3()
