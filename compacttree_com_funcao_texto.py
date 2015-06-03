@@ -258,19 +258,23 @@ class CreateTree:
             bifor=self.biforcado(num)
             print bifor            
             try:
-                if bifor:
-                    for key in self.nodes[num][1].keys():
-                        node=self.nodes[num][1][key]
-                        print node
-                        self.encurtar(node)
-                elif not bifor:
-                    self.encurtar(num)
-                else:
+                if bifor==-1:
                     pass
+                else:
+                    self.encurtar(num)
+#                if bifor:
+ #                   for key in self.nodes[num][1].keys():
+  #                      node=self.nodes[num][1][key]
+   #                     print node
+    #                    self.encurtar(node)
+                #elif not bifor:
+#                    self.encurtar(num)
+ #               else:
+  #                  pass
             except:
                 pass
             num+=1
-        
+        ########
             
     #ate agora faz o pretendido mas falta compor funcoes para ficarem a juntar os caracteres das bifurcacoes. 
             #uma vez que so juntam o texto apartir do no seguinte de cada bifurcacao, 
@@ -328,6 +332,7 @@ class CreateTree:
 #            else:
 #                return None
 #        return self.getLeafesBelow(node)
+
         pos=0
         node=0
         while pos<len(pattern):
@@ -336,11 +341,22 @@ class CreateTree:
                     
                 #for pos in range(len(pattern)):
                 if self.nodes[node][1].has_key(pattern[pos:pos+lenght]):
-                    node=self.nodes[node][1][pattern[pos:pos+lenght]]
-                    pos+=lenght
+                    node=self.nodes[node][1][key]
+                    pos+=(lenght-1)
                 else:
-                    return None
-        return self.getLeafesBelow(node)
+                    pass
+        if pos!=0:
+            posic=self.getLeafesBelow(node)
+            print "O padrao foi encontado na posição xxxx"#######################
+            return posic
+
+            if pos==len(pattern)-1:
+                posic=self.getLeafesBelow(node)
+                print 'o padrao foi encontrado na sua totalidade na sequencia'                
+                
+                return posic
+        
+        
         
     def getLeafesBelow(self,node):
         res=[]
@@ -353,7 +369,7 @@ class CreateTree:
                 res.extend(leafes)         
         return res
         
-#ESTÀ A DAR ERRO E NAO PERCEBI PORQUE xD
+
 
 
 
@@ -578,7 +594,18 @@ if __name__=='__main__':
         #print (Entrez.read(a))
         #print st.get_genome_file("escherichia coli")
         #print st.get_gene_file("idh1")#id tem de ser da bd gene
-        print st.getLastNodeBelow_main(1)
+        #print st.getLastNodeBelow_main(1)
+         
+    
+    #test2()
     
     
-    test2()
+    
+    def test3():
+        seq="TACT"
+        st=CreateTree()
+        st.suffixTrieFromSeq(seq)
+        print(st.biforcado(2))
+        
+        
+    test3()
