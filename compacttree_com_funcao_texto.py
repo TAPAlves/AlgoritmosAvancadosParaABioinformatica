@@ -185,12 +185,13 @@ class CreateTree:
                 
                 print nos[stop]
                 print nod
-                text=self.text_with_cut(nod,nos[stop])
+                stop1=int(stop)
+                text=self.text_with_cut(nod,nos[stop1])
                 #print nod                
                 #print nos[stop]
                 #print text
                 #if text not False:                
-                dicio[text]=nos[stop]
+                dicio[text]=nos[stop1]
                 #else:
                     #dicio[node][1][]
                 #eliminar o dicionario existente    
@@ -560,9 +561,108 @@ class CreateTree:
         #rint record
         
     
-        
-        
+###############################################################################
+################################  M  E  N  U  #################################         
+###############################################################################        
        
+def main():
+    st=CreateTree()    
+    while True:
+        print("1 - Contrução de árvore de sufixos apartir de uma sequência já conhecida")
+        print("2 - Construção da árvore de sufixos apartir de um ficheiro FASTA")
+        print("3 - Extração de uma sequência da base de dados")
+        print("4 - Pesquisa de uma sequência no genoma")
+        print("5 - Imprimir a árvore criada") 
+        #print("6 - " ) 
+        print("9 - Sair")
+        op=input("O que pretende fazer? ")
+
+        if op==1:
+            seq=input('\nInsira a sequência para a construção da árvore:\n')
+            st.suffixTrieFromSeq(str(seq))
+            st.s_to_c_tree()
+            print('\nÁrvore criada com sucesso\n')
+        elif op=="2":
+            opt=input('\nPretende a pesquisa de um genoma na base de dados?(S ou N):\n').upper()
+            if opt=='S':
+                  opt1=input('\nPossui o GI?(S ou N):\n').upper()
+                  if opt1=='S':
+                      idn=input('\n Introduza o GI:\n').upper()
+                      seq=st.get_seq_from_genome(0,str(idn))
+                      st.suffixTrieFromSeq(seq)
+                      st.s_to_c_tree()
+                      print('\nÁrvore criada com sucesso\n')
+                     
+                  if opt1=='N':
+                      especie=input('\n Introduza o nome da espécie:\n')
+                      seq=st.get_seq_from_genome(especie)
+                      st.suffixTrieFromSeq(seq)
+                      st.s_to_c_tree()
+                      print('\nÁrvore criada com sucesso\n')
+
+            if opt=='N':
+                file_fasta=input('\nIntroduza o nome do ficheiro FASTA (sem extensão):\n')
+                seq=st.get_seq_from_genome(str(file_fasta)+'.fasta')
+                st.suffixTrieFromSeq(seq)
+                st.s_to_c_tree()
+                print('\nÁrvore criada com sucesso\n')
+            
+        elif op=="3":
+            word=input('\nPretende extrair um gene ou um genoma?').upper()
+            if word=='GENE':
+                opt1=input('\nPossui o GI?(S ou N):\n').upper()
+                if opt1=='S':
+                    idn=input('\n Introduza o GI:\n').upper()
+                    st.get_seq_from_gene(0,str(idn))
+                    print ('\nGene extraido com sucesso para a diretoria de trabalho\n')
+                if opt1=='N':
+                    gene=input('\n Introduza o nome do gene:\n')
+                    st.get_seq_from_gene(gene)
+                    print ('\nGene extraido com sucesso para a diretoria de trabalho\n')
+            
+            if word=='GENOMA':
+                
+                opt1=input('\nPossui o GI?(S ou N):\n').upper()
+                if opt1=='S':
+                    idn=input('\n Introduza o GI:\n').upper()
+                    st.get_seq_from_genoma(0,str(idn))
+                    print ('\nGenoma extraido com sucesso para a diretoria de trabalho\n')
+                if opt1=='N':
+                    especie=input('\n Introduza o nome da espécie:\n')
+                    st.get_seq_from_genome(especie)
+                    print ('\nGenoma extraido com sucesso para a diretoria de trabalho\n')
+                    
+        elif op=="4":
+            opt=input('\nPretende a pesquisa de um gene na base de dados?(S ou N):\n').upper()
+            if opt=='S':
+                  opt1=input('\nPossui o GI?(S ou N):\n').upper()
+                  if opt1=='S':
+                      idn=input('\n Introduza o GI:\n').upper()
+                      seq=st.get_seq_from_gene(0,str(idn))
+                      pos=st.findPattern(seq)
+                      print('\nPadrão encontado na posição:\n')+pos
+                     
+                  if opt1=='N':
+                      gene=input('\n Introduza o nome do gene:\n')
+                      seq=st.get_seq_from_gene(gene)
+                      st.suffixTrieFromSeq(seq)
+                      pos=st.findPattern(seq)
+                      print('\nPadrão encontado na posição:\n')+pos
+            if opt=='N':
+                inp_seq=input('\nIntroduza a sequencia a pesquisar?\n')
+                pos=st.findPattern(str(inp_seq))
+                print('\nPadrão encontado na posição:\n')+pos
+               
+        elif op=="5":
+            st.print_tree()
+
+        #elif op=="6": 
+        
+        elif op=="9":
+            print("\n Adeus!")
+            break
+        else:
+            print("\n Opção não valida! Tente novamente.")
 
       
       
@@ -617,7 +717,7 @@ if __name__=='__main__':
         #print(st.biforcado(2))##
         #print st.text_with_cut(1,13)##
         #print st.print_tree()##corta bem os ficheiros 
-        #print st.encurtar(1)
+        print st.encurtar(1)
         #print st.print_tree()
         #print type('drt')
         #print st.getLastNodeBelow(5)
@@ -630,4 +730,5 @@ if __name__=='__main__':
         
         
         
+    #main()
     test3()
