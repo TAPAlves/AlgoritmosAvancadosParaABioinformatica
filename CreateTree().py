@@ -67,32 +67,19 @@ class CreateTree:
 
 #funcao que retirao texto, dados os nos iniciais e finais do ramo em questao
     
-    def text_with_cut (self,init,final):#distancia entre nos inicial e final
+    def text_with_cut (self,init,lista):#distancia entre nos inicial e final
         text=""
         keys=self.nodes[init][1].keys()
-        if len(keys)>1:
-            for key in keys:
-                next_node=self.nodes[init][1][key]
-                final_node=self.getLastNodeBelow(next_node)#vai ver se o no final é o mesmo que é passado pela funcao anterior. Se o no seguinte for logo um biforcado não ocorre união de texto uma vez que so podiamos juntar uma letra apenas
-                if final_node[0]==final:
+        for key in keys:
+            next_node=self.nodes[init][1][key]
+            for path in lista:
+                if next_node==lista[path][0]:
                     text+=key
-                    while next_node!=final:
-                        letter2=self.nodes[next_node][1].keys()[0]
-                        text+=letter2
-                        destin=self.nodes[next_node][1].values()
-                        destin_node=destin[0]
-                        del self.nodes[next_node]            
-                        next_node=destin_node
-        elif len(keys)==1:
-            text+=keys[0]
-            next_node=self.nodes[init][1][keys[0]]
-            while next_node!=final:
-                letter2=self.nodes[next_node][1].keys()[0]
-                text+=letter2
-                destin=self.nodes[next_node][1].values()
-                destin_node=destin[0]
-                del self.nodes[next_node]            
-                next_node=destin_node
+                    for i in path:
+                        letter=self.nodes[i][1].keys()[0]
+                        text+=letter
+                    for i in range(len(path)-1):#todos menos o ultimo elemento 
+                        del self.nodes[i]
         return text
             
 #nodos sao eliminados na funcao anterior mas temos de ligar o no inicial ao no final            
@@ -101,9 +88,8 @@ class CreateTree:
         try:
             nos=self.getLastNodeBelow_main(nod)
             for stop in range(len(nos)):
-                stop1=int(stop)
-                text=self.text_with_cut(nod,nos[stop1])
-                dicio[text]=nos[stop1]
+                text=self.text_with_cut(nod,nos[stop])
+                dicio[text]=stop[-1]
                 #eliminar o dicionario existente    
             self.nodes[nod][1].clear()
             for key in dicio.keys():
@@ -116,10 +102,12 @@ class CreateTree:
         res=[]
         if self.nodes[node][0]>=0:
             res.append(node)#ultimo no (correspondente a uma folha)
-            
         elif not self.biforcado(node):
-            newnode=self.nodes[node][1].values()#lista
-            stop=self.getLastNodeBelow(newnode[0])
+            res.append(node)            
+            newnode=self.nodes[node][1].values()
+            list_newnode=list(newnode)
+            #res.extend(list_newnode)#lista
+            stop=self.getLastNodeBelow(list_newnode[0])
             res.extend(stop)         
         else:#se for biforcado
             res.append(node)
@@ -133,13 +121,13 @@ class CreateTree:
         keys=self.nodes[no][1].keys()
         if len(keys)==1:#se nao for biforcado
             final_node=self.getLastNodeBelow(no)
-            res.extend(final_node)
+            res.append(final_node)
         elif len(keys)>1:#biforcado
             for key in keys:
+                #res.append()
                 next_node=self.nodes[no][1][key]
-                print next_node                
                 final_node_bifor=self.getLastNodeBelow(next_node)
-                res.extend(final_node_bifor)
+                res.append(final_node_bifor)
         return res
 
     def s_to_c_tree(self):
@@ -418,9 +406,9 @@ if __name__=='__main__':
         #print st.text_with_cut(1,13)##
         #print st.print_tree()##corta bem os ficheiros 
         print st.encurtar(1)
-        #print st.print_tree()
+        print st.print_tree()
         #print type('drt')
-        #print st.getLastNodeBelow(5)
+        #print st.getLastNodeBelow()
         #print st.getLastNodeBelow_main(1)
         #st.s_to_c_tree()
         #print st.print_tree()
