@@ -58,14 +58,14 @@ class CompactTree:
             self.addSufix(t[i:],i)
 
             
-#para saber se e biforcado ou nao, dado o no respetivo
-    def biforcado(self, node):
+#para saber se e bifurcado ou nao, dado o no respetivo
+    def bifurcado(self, node):
         try:
-            if len(self.nodes[node][1].keys())>1:#muitas chaves, logo biforcado
+            if len(self.nodes[node][1].keys())>1:#muitas chaves, logo bifurcado
                 return True
             elif len(self.nodes[node][1].keys())==0:#folha
                 return -1
-            else:#nao biforcado
+            else:#nao bifurcado
                 return False
         except:
             return False
@@ -83,7 +83,7 @@ class CompactTree:
                 for i in lista:#confirmada a situacao anterior percorre-se a lista para retirar o texto e eliminar os nos
                     letter=self.nodes[i][1].keys()
                     letter2=list(letter)
-                    if len(letter2) >=1 and not self.biforcado(i):#nao pode ser 0
+                    if len(letter2) >=1 and not self.bifurcado(i):#nao pode ser 0
                         text+=letter2[0]
                     else:
                         pass
@@ -95,7 +95,7 @@ class CompactTree:
             
     def encurtar(self,nod):
         dicio={}
-        nos=self.getLastNodeBelow_main(nod)#vai buscar os caminhos em forma de lista (no biforcado: lista de listas porque um no biforcado tem varios caminhos)
+        nos=self.getLastNodeBelow_main(nod)#vai buscar os caminhos em forma de lista (no bifurcado: lista de listas porque um no bifurcado tem varios caminhos)
         for stop in range(len(nos)):
             text=self.text_with_cut(nod,nos[stop])#passa a funcao o no inicial e uma lista do caminho a seguir
             dicio[text]=nos[stop][-1]#cria uma entrada no dicionario com o texto e o ultimo no como valor
@@ -104,32 +104,32 @@ class CompactTree:
             self.nodes[nod][1][key]=dicio[key]
         
        
-#cria uma lista do caminho, dado um no nao biforcado
+#cria uma lista do caminho, dado um no nao bifurcado
        
     def getLastNodeBelow(self,node):#so aceita nos nao biforcados iniciais
         res=[]
         if self.nodes[node][0]>=0:
             res.append(node)#ultimo no (correspondente a uma folha)
-        elif not self.biforcado(node):#percorre o caminho ate encontrar uma folha ou um no biforcado
+        elif not self.bifurcado(node):#percorre o caminho ate encontrar uma folha ou um no bifurcado
             res.append(node)            
             newnode=self.nodes[node][1].values()
             list_newnode=list(newnode)
             stop=self.getLastNodeBelow(list_newnode[0])
             res.extend(stop)         
-        else:#se for biforcado
+        else:#se for bifurcado
             res.append(node)
         return res
         
 
-#cria a lista do caminho mas, sendo no biforcado retorna uma matriz de listas, sendo cada uma correspondente as opcoes do no
+#cria a lista do caminho mas, sendo no bifurcado retorna uma matriz de listas, sendo cada uma correspondente as opcoes do no
 
-    def getLastNodeBelow_main(self,no):#biforcado ou nao
+    def getLastNodeBelow_main(self,no):#bifurcado ou nao
         res=[]
         keys=self.nodes[no][1].keys()
-        if len(keys)==1:#se nao for biforcado
+        if len(keys)==1:#se nao for bifurcado
             final_node=self.getLastNodeBelow(no)
             res.append(final_node)
-        elif len(keys)>1:#biforcado
+        elif len(keys)>1:#bifurcado
             for key in keys:
                 next_node=self.nodes[no][1][key]
                 final_node_bifor=self.getLastNodeBelow(next_node)
@@ -141,7 +141,7 @@ class CompactTree:
     def s_to_c_tree(self):
         num=0
         while num is not self.num:
-            bifor=self.biforcado(num)
+            bifor=self.bifurcado(num)
             try:
                 if bifor==-1:
                     pass
@@ -404,7 +404,7 @@ if __name__=='__main__':
         #print st.encurtar(2)
         #print st.s_to_c_tree()
         #print st.text_with_cut(2,5)
-       # print st.biforcado(2)
+       # print st.bifurcado(2)
         #print st.findPattern("")
        # print st.pesquisa_genoma()
         #a=Entrez.einfo()
@@ -418,7 +418,7 @@ if __name__=='__main__':
         seq="TCAA"
         st=CompactTree()
         st.suffixTrieFromSeq(seq)
-        #print(st.biforcado(2))##
+        #print(st.bifurcado(2))##
         #print st.text_with_cut(1,13)##
         #print st.print_tree()##corta bem os ficheiros 
         #print (st.encurtar(0))
