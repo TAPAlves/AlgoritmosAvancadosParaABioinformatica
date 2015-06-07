@@ -155,26 +155,30 @@ class CreateTree:
 ###Algoritmo de pesquisa###
 ########################################################
 
+#encontar um padrao na arvore
+
     def findPattern(self,pattern):
         pos=0
         node=0
         while pos<len(pattern)-1:
             for key in self.nodes[node][1].keys():
                 lenght=len(key)
-                if pattern[pos:pos+lenght] in self.nodes[node][1]:   
+                if pattern[pos:pos+lenght] in self.nodes[node][1]:# a pesquisa e feita pelo tamanho de cada chave encontrada
                     node=self.nodes[node][1][key]
-                    pos+=(lenght-1)
-                else:
+                    pos+=(lenght-1)#como encontrou a posicao passa a ser a pos inicial mais o tamanho da key
+                else:#nao corresponde por isso passa pra chave seguinte
                     pass
-        if pos==len(pattern)-1:
-            posic=self.getLeafesBelow(node)
+        if pos==len(pattern)-1:#depois de terminado o ciclo anterior, verifica-se onde a posicao acabou
+            posic=self.getLeafesBelow(node)#chama a funcao para saber o valor da folha do ultimo no
             print ('O padrao foi encontrado na sua totalidade na sequencia na posicao %s da sequencia' %posic)        
-        elif pos!=0:
+        elif pos>=10:#considera-se que se encontra de forma parcial quando mais de 10 nucleotidos sao iguais
             posic=self.getLeafesBelow(node)
-            #tam=posic+pos
-            print ("O padrao foi encontado, de forma parcial, da posição %s ate  da sequencia" %posic)#,tam)#######################                   
+            for i in posic:#pode ser encontrado em varios sitios            
+                tam=int(i)+int(pos)
+                print ("O padrao foi encontado, de forma parcial, da posicao %s ate a posicao %s da sequencia" %posic,tam)                   
         return posic
     
+#retorna a folha ou folhas abaixo de um dado no
     
     def getLeafesBelow(self,node):
         res=[]
@@ -189,24 +193,26 @@ class CreateTree:
         
 
 ###############################################################################
-###Retirar as sequencias das bases de dados (padr�o-gene) e sufixos (genoma)###
+###Retirar as sequencias das bases de dados (padrao-gene) e sufixos (genoma)###
 ###############################################################################        
+
+#dado um gi ou um nome da especie a funcao retorna a sequencia desse dado input, em formato de texto
       
     def get_seq_from_genome(self,especie=0,idn=0):
         if idn==0:
             gf=self.get_genome_file(especie)
         elif especie==0:
             gf=self.get_genome_file(0,idn)
-            print (gf)
-        f=open(gf, 'r')
+        f=open(gf, 'r')#a funcao chamada retorna o nome do ficheiro criado, chamado aqui
         sequence = SeqIO.read(f, 'fasta')
         print ("A sequencia usada para construir a arvore sera:\n"+str(sequence.id))#para informar qual sera a sequencia usada
         return str(sequence.seq).strip(" ")
         
-       
-    def get_genome_file(self,especie=0,idn=0):#cria o ficheiro e da o nome a funcao anterior para retirar a sequencia do ficheiro
+#dado um gi ou um nome da especia a funcao vai extrair a sequencia da base dados no ncbi e guarda-la num ficheiro, retornando o seu nome
+        
+    def get_genome_file(self,especie=0,idn=0):
         return_filename=""        
-        if idn==0:
+        if idn==0:#damos a especie
             hand=Entrez.esearch(db='nucleotide',term=especie+"[ORGN]",retmax=100,retype="gb",retmode="text")
             results=Entrez.read(hand)
             idnum=results["IdList"][0]#primeiro elemento da lista de resultados
@@ -216,7 +222,7 @@ class CreateTree:
             SeqIO.write(read,name, "fasta")
             handle.close()
             return_filename+=name
-        elif especie==0:
+        elif especie==0:#damos o id a funcao
             handle=Entrez.efetch(db='nucleotide',rettype="fasta",retmode="text",id=idn)
             read=SeqIO.read(handle,"fasta")
             name="genome_"+str(idn).strip(" ")+".fasta"
@@ -224,6 +230,8 @@ class CreateTree:
             handle.close()
             return_filename+=name
         return return_filename
+
+#dado um gi ou um nome do gene a funcao retorna a sequencia desse dado input, em formato de texto
 
     def get_seq_from_gene(self,gene=0,idn=0):
         if idn==0:
@@ -236,10 +244,10 @@ class CreateTree:
         print ("A sequencia do gene pesquisado é:\n"+str(sequence.id))#para informar qual sera a sequencia usada
         return str(sequence.seq).strip(" ")
        
+   
     def get_gene_file(self,gene=0,idn=0):#cria o ficheiro e da o nome a funcao anterior para retirar a sequencia do ficheiro
         return_filename=""        
-        
-        if idn==0:
+        if idn==0:#damos o nome da especie a funcao 
             hand=Entrez.esearch(db='gene',term=gene+"[sym]",retmax=100,retype="gb",retmode="text")
             results=Entrez.read(hand)
             idnum=results["IdList"][0]#primeiro elemento da lista de resultados
@@ -251,13 +259,13 @@ class CreateTree:
 
             identif=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_id']['Seq-id']['Seq-id_gi']#gi
                         
-            handle = Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=identif, seq_start=desde, seq_stop=to )
+            handle = Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=identif, seq_start=desde, seq_stop=to )#depois de termos o id, e os valores onde comeca e acaba a seq vamos busca-la
             read=SeqIO.read(handle,"fasta")
             name="gene_"+str(gene).strip(" ")+".fasta"
             SeqIO.write(read,name, "fasta")
             handle.close()
             return_filename+=name
-        elif gene==0:
+        elif gene==0:#damos o gi do gene
             handl=Entrez.efetch(db='gene',rettype="gb",retmode="xml",id=idn)
             record=Entrez.read(handl)
             to=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_to']#para
@@ -274,6 +282,7 @@ class CreateTree:
             handle.close()
             return_filename+=name
 
+
 ###############################################################################
 ################################  M  E  N  U  #################################         
 ###############################################################################        
@@ -281,44 +290,42 @@ class CreateTree:
 def main():
     st=CreateTree()    
     while True:
-        print("1 - Contrucaoo de arvore de sufixos apartir de uma sequencia ja conhecida")
-        print("2 - Constru��o da �rvore de sufixos apartir de um ficheiro FASTA")
-        print("3 - Extra��o de uma sequ�ncia da base de dados")
-        print("4 - Pesquisa de uma sequ�ncia no genoma")
-        print("5 - Imprimir a �rvore criada") 
-        #print("6 - " ) 
-        print("9 - Sair")
+        print("1 - Contrucao de arvore de sufixos apartir de uma sequencia ja conhecida")
+        print("2 - Construcao da arvore de sufixos apartir de um ficheiro FASTA")
+        print("3 - Extracao de uma sequencia da base de dados")
+        print("4 - Pesquisa de uma sequencia no genoma")
+        print("5 - Imprimir a arvore criada") 
+        print("6 - Sair")
         op=input("O que pretende fazer? ")
-
         if op==1:
-            seq=input('\nInsira a sequ�ncia para a constru��o da �rvore:\n')
-            st.suffixTrieFromSeq(str(seq))
-            st.s_to_c_tree()
-            print('\arvore criada com sucesso\n')
+            seq=input('\nInsira a sequencia para a construcao da arvore:\n')
+            st.suffixTrieFromSeq(str(seq))#dada a seq vamos construir a arvore
+            st.s_to_c_tree()#e comprimi-la
+            print('\Arvore criada com sucesso\n')
         elif op=="2":
             opt=input('\nPretende a pesquisa de um genoma na base de dados?(S ou N):\n').upper()
             if opt=='S':
                   opt1=input('\nPossui o GI?(S ou N):\n').upper()
-                  if opt1=='S':
+                  if opt1=='S':#procura pelo GI
                       idn=input('\n Introduza o GI:\n').upper()
                       seq=st.get_seq_from_genome(0,str(idn))
                       st.suffixTrieFromSeq(seq)
                       st.s_to_c_tree()
-                      print('\n�rvore criada com sucesso\n')
+                      print('\nArvore criada com sucesso\n')
                      
-                  if opt1=='N':
-                      especie=input('\n Introduza o nome da esp�cie:\n')
+                  if opt1=='N':#procura pela especie
+                      especie=input('\n Introduza o nome da especie:\n')
                       seq=st.get_seq_from_genome(especie)
                       st.suffixTrieFromSeq(seq)
                       st.s_to_c_tree()
-                      print('\n�rvore criada com sucesso\n')
+                      print('\nArvore criada com sucesso\n')
 
-            if opt=='N':
-                file_fasta=input('\nIntroduza o nome do ficheiro FASTA (sem extens�o):\n')
+            if opt=='N':#entao e necessario dar o ficheiro fasta da sequencia
+                file_fasta=input('\nIntroduza o nome do ficheiro FASTA (sem extensao):\n')
                 seq=st.get_seq_from_genome(str(file_fasta)+'.fasta')
                 st.suffixTrieFromSeq(seq)
                 st.s_to_c_tree()
-                print('\n�rvore criada com sucesso\n')
+                print('\nArvore criada com sucesso\n')
             
         elif op=="3":
             word=input('\nPretende extrair um gene ou um genoma?').upper()
@@ -341,7 +348,7 @@ def main():
                     st.get_seq_from_genoma(0,str(idn))
                     print ('\nGenoma extraido com sucesso para a diretoria de trabalho\n')
                 if opt1=='N':
-                    especie=input('\n Introduza o nome da esp�cie:\n')
+                    especie=input('\n Introduza o nome da especie:\n')
                     st.get_seq_from_genome(especie)
                     print ('\nGenoma extraido com sucesso para a diretoria de trabalho\n')
                     
@@ -352,26 +359,26 @@ def main():
                   if opt1=='S':
                       idn=input('\n Introduza o GI:\n').upper()
                       seq=st.get_seq_from_gene(0,str(idn))
-                      pos=st.findPattern(seq)
-                      print('\nPadr�o encontado na posi��o:\n')+pos
+                      st.findPattern(seq)
                      
                   if opt1=='N':
                       gene=input('\n Introduza o nome do gene:\n')
                       seq=st.get_seq_from_gene(gene)
                       st.suffixTrieFromSeq(seq)
-                      pos=st.findPattern(seq)
-                      print('\nPadr�o encontado na posi��o:\n')+pos
+                      st.findPattern(seq)
+
             if opt=='N':
                 inp_seq=input('\nIntroduza a sequencia a pesquisar?\n')
-                pos=st.findPattern(str(inp_seq))
-                print('\nPadr�o encontado na posi��o:\n')+pos               
+                st.findPattern(str(inp_seq))
+              
         elif op=="5":
             st.print_tree()
-        elif op=="9":
+            
+        elif op=="6":
             print("\n Adeus!")
             break
         else:
-            print("\n Op��o n�o valida! Tente novamente.")
+            print("\n Opcao nao valida! Tente novamente.")
             
 
 if __name__=='__main__':
