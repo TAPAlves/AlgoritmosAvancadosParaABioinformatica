@@ -61,63 +61,59 @@ class CreateTree:
 #para saber se e biforcado ou nao, dado o no respetivo
     def biforcado(self, node):
         try:
-            if len(self.nodes[node][1].keys())>1:
+            if len(self.nodes[node][1].keys())>1:#muitas chaves, logo biforcado
                 return True
-            elif len(self.nodes[node][1].keys())==0:
+            elif len(self.nodes[node][1].keys())==0:#folha
                 return -1
-            else:
+            else:#nao biforcado
                 return False
         except:
-            print ("errado")
             return False
         
 
-#funcao que retirao texto, dados os nos iniciais e finais do ramo em questao
+#funcao que retira o texto, dados os nos iniciais e o caminho para atingir o no final do ramo em questao (em forma de lista)
     
-    def text_with_cut (self,init,lista):#distancia entre nos inicial e final
+    def text_with_cut (self,init,lista):
         text=""
-        keys=self.nodes[init][1].keys()
-        for key in keys:
-            next_node=self.nodes[init][1][key]
-            if next_node==lista[0]:
+        keys=self.nodes[init][1].keys()#todas as chaves do primeiro no
+        for key in keys:#por cada uma:
+            next_node=self.nodes[init][1][key]#no seguinte
+            if next_node==lista[0]:#verifica a existencia do no seguinte no caminho dado pela lista
                 text+=key
-                for i in lista:
+                for i in lista:#confirmada a situacao anterior percorre-se a lista para retirar o texto e eliminar os nos
                     letter=self.nodes[i][1].keys()
                     letter2=list(letter)
-                    if len(letter2) >=1 and not self.biforcado(i):
+                    if len(letter2) >=1 and not self.biforcado(i):#nao pode ser 0
                         text+=letter2[0]
                     else:
                         pass
                 for i in range(len(lista)-1):#todos menos o ultimo elemento 
-                    del self.nodes[lista[i]]
+                    del self.nodes[lista[i]]#apaga os nos do dicionario
         return text
             
-#nodos sao eliminados na funcao anterior mas temos de ligar o no inicial ao no final            
-    def encurtar(self,nod):
-        dicio={}        
-        #try:
-        nos=self.getLastNodeBelow_main(nod)
-        for stop in range(len(nos)):
-            #print(nos[stop])
-            text=self.text_with_cut(nod,nos[stop])
-            dicio[text]=nos[stop][-1]
-            #print(dicio) #eliminar o dicionario existente    
-        self.nodes[nod][1].clear()
-        for key in dicio.keys():
-            self.nodes[nod][1][key]=dicio[key]
-        #except:
-        print( dicio)
-        
+#nodos sao eliminados na funcao anterior mas temos de ligar o no inicial ao no final
             
+    def encurtar(self,nod):
+        dicio={}
+        nos=self.getLastNodeBelow_main(nod)#vai buscar os caminhos em forma de lista (no biforcado: lista de listas porque um no biforcado tem varios caminhos)
+        for stop in range(len(nos)):
+            text=self.text_with_cut(nod,nos[stop])#passa a funcao o no inicial e uma lista do caminho a seguir
+            dicio[text]=nos[stop][-1]#cria uma entrada no dicionario com o texto e o ultimo no como valor
+        self.nodes[nod][1].clear()#limpa o dicionario do no na arvore
+        for key in dicio.keys():#acrescentar as chaves do dicionario temporario criado ao dicionario do no na arvore
+            self.nodes[nod][1][key]=dicio[key]
+        
+       
+#cria uma lista do caminho, dado um no nao biforcado
+       
     def getLastNodeBelow(self,node):#so aceita nos nao biforcados iniciais
         res=[]
         if self.nodes[node][0]>=0:
             res.append(node)#ultimo no (correspondente a uma folha)
-        elif not self.biforcado(node):
+        elif not self.biforcado(node):#percorre o caminho ate encontrar uma folha ou um no biforcado
             res.append(node)            
             newnode=self.nodes[node][1].values()
             list_newnode=list(newnode)
-            #res.extend(list_newnode)#lista
             stop=self.getLastNodeBelow(list_newnode[0])
             res.extend(stop)         
         else:#se for biforcado
@@ -125,8 +121,8 @@ class CreateTree:
         return res
         
 
-#imprime ou um ou varios nos finais
-    
+#cria a lista do caminho mas, sendo no biforcado retorna uma matriz de listas, sendo cada uma correspondente as opcoes do no
+
     def getLastNodeBelow_main(self,no):#biforcado ou nao
         res=[]
         keys=self.nodes[no][1].keys()
@@ -135,12 +131,13 @@ class CreateTree:
             res.append(final_node)
         elif len(keys)>1:#biforcado
             for key in keys:
-                #res.append()
                 next_node=self.nodes[no][1][key]
                 final_node_bifor=self.getLastNodeBelow(next_node)
                 res.append(final_node_bifor)
         return res
 
+
+#transforma uma arvore de sufixos numa arvore de compactacao
     def s_to_c_tree(self):
         num=0
         while num is not self.num:
