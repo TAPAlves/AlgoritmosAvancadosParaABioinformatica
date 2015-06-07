@@ -12,7 +12,7 @@ Entrez.email='tiago_alves26@hotmail.com'
 class CompactTree:
     
     def __init__(self):
-        self.nodes={0:(-1,{})}#root node
+        self.nodes={0:(-1,{})} #root node
         self.num=0 #numero de no
 
 ##imprimir a arvore
@@ -50,7 +50,7 @@ class CompactTree:
             pos+=1
 
 
-#apartir de uma sequencia criar uma arvore de sufixos
+#partindo de uma sequencia criar uma arvore de sufixos
 
     def suffixTrieFromSeq(self,text):
         t=text+"$"
@@ -61,11 +61,11 @@ class CompactTree:
 #para saber se e bifurcado ou nao, dado o no respetivo
     def bifurcado(self, node):
         try:
-            if len(self.nodes[node][1].keys())>1:#muitas chaves, logo bifurcado
+            if len(self.nodes[node][1].keys())>1: #muitas chaves, logo bifurcado
                 return True
-            elif len(self.nodes[node][1].keys())==0:#folha
+            elif len(self.nodes[node][1].keys())==0: #folha
                 return -1
-            else:#nao bifurcado
+            else: #nao bifurcado
                 return False
         except:
             return False
@@ -75,12 +75,12 @@ class CompactTree:
     
     def text_with_cut (self,init,lista):
         text=""
-        keys=self.nodes[init][1].keys()#todas as chaves do primeiro no
-        for key in keys:#por cada uma:
-            next_node=self.nodes[init][1][key]#no seguinte
-            if next_node==lista[0]:#verifica a existencia do no seguinte no caminho dado pela lista
+        keys=self.nodes[init][1].keys() #todas as chaves do primeiro no
+        for key in keys: #por cada uma:
+            next_node=self.nodes[init][1][key] #no seguinte
+            if next_node==lista[0]: #verifica a existencia do no seguinte no caminho dado pela lista
                 text+=key
-                for i in lista:#confirmada a situacao anterior percorre-se a lista para retirar o texto e eliminar os nos
+                for i in lista: #confirmada a situacao anterior percorre-se a lista para retirar o texto e eliminar os nos
                     letter=self.nodes[i][1].keys()
                     letter2=list(letter)
                     if len(letter2) >=1 and not self.bifurcado(i):#nao pode ser 0
@@ -95,41 +95,41 @@ class CompactTree:
             
     def encurtar(self,nod):
         dicio={}
-        nos=self.getLastNodeBelow_main(nod)#vai buscar os caminhos em forma de lista (no bifurcado: lista de listas porque um no bifurcado tem varios caminhos)
+        nos=self.getLastNodeBelow_main(nod) #vai buscar os caminhos em forma de lista (no bifurcado: lista de listas porque um no bifurcado tem varios caminhos)
         for stop in range(len(nos)):
-            text=self.text_with_cut(nod,nos[stop])#passa a funcao o no inicial e uma lista do caminho a seguir
-            dicio[text]=nos[stop][-1]#cria uma entrada no dicionario com o texto e o ultimo no como valor
-        self.nodes[nod][1].clear()#limpa o dicionario do no na arvore
-        for key in dicio.keys():#acrescentar as chaves do dicionario temporario criado ao dicionario do no na arvore
+            text=self.text_with_cut(nod,nos[stop]) #passa a funcao o no inicial e uma lista do caminho a seguir
+            dicio[text]=nos[stop][-1] #cria uma entrada no dicionario com o texto e o ultimo no como valor
+        self.nodes[nod][1].clear() #limpa o dicionario do no na arvore
+        for key in dicio.keys(): #acrescentar as chaves do dicionario temporario criado ao dicionario do no na arvore
             self.nodes[nod][1][key]=dicio[key]
         
        
 #cria uma lista do caminho, dado um no nao bifurcado
        
-    def getLastNodeBelow(self,node):#so aceita nos nao biforcados iniciais
+    def getLastNodeBelow(self,node): #so aceita nos nao bifurcados iniciais
         res=[]
         if self.nodes[node][0]>=0:
-            res.append(node)#ultimo no (correspondente a uma folha)
-        elif not self.bifurcado(node):#percorre o caminho ate encontrar uma folha ou um no bifurcado
+            res.append(node) #ultimo no (correspondente a uma folha)
+        elif not self.bifurcado(node): #percorre o caminho ate encontrar uma folha ou um no bifurcado
             res.append(node)            
             newnode=self.nodes[node][1].values()
             list_newnode=list(newnode)
             stop=self.getLastNodeBelow(list_newnode[0])
             res.extend(stop)         
-        else:#se for bifurcado
+        else: #se for bifurcado
             res.append(node)
         return res
         
 
 #cria a lista do caminho mas, sendo no bifurcado retorna uma matriz de listas, sendo cada uma correspondente as opcoes do no
 
-    def getLastNodeBelow_main(self,no):#bifurcado ou nao
+    def getLastNodeBelow_main(self,no): #bifurcado ou nao
         res=[]
         keys=self.nodes[no][1].keys()
-        if len(keys)==1:#se nao for bifurcado
+        if len(keys)==1: #se nao for bifurcado
             final_node=self.getLastNodeBelow(no)
             res.append(final_node)
-        elif len(keys)>1:#bifurcado
+        elif len(keys)>1: #bifurcado
             for key in keys:
                 next_node=self.nodes[no][1][key]
                 final_node_bifor=self.getLastNodeBelow(next_node)
@@ -163,20 +163,20 @@ class CompactTree:
         while pos<len(pattern)-1:
             for key in self.nodes[node][1].keys():
                 lenght=len(key)
-                if pattern[pos:pos+lenght] in self.nodes[node][1]:# a pesquisa e feita pelo tamanho de cada chave encontrada
+                if pattern[pos:pos+lenght] in self.nodes[node][1]: # a pesquisa e feita pelo tamanho de cada chave encontrada
                     node=self.nodes[node][1][key]
-                    pos+=(lenght-1)#como encontrou a posicao passa a ser a pos inicial mais o tamanho da key
-                else:#nao corresponde por isso passa pra chave seguinte
+                    pos+=(lenght-1) #como encontrou a posicao passa a ser a pos inicial mais o tamanho da key
+                else: #nao corresponde por isso passa pra chave seguinte
                     pass
-        if pos==len(pattern)-1:#depois de terminado o ciclo anterior, verifica-se onde a posicao acabou
-            posic=self.getLeafesBelow(node)#chama a funcao para saber o valor da folha do ultimo no
+        if pos==len(pattern)-1: #depois de terminado o ciclo anterior, verifica-se onde a posicao acabou
+            posic=self.getLeafesBelow(node) #chama a funcao para saber o valor da folha do ultimo no
             print ('O padrao foi encontrado na sua totalidade na sequencia na posicao %s da sequencia' %posic)        
-        elif pos>=10:#considera-se que se encontra de forma parcial quando mais de 10 nucleotidos sao iguais
+        elif pos>=10: #considera-se que se encontra de forma parcial quando mais de 10 nucleotidos sao iguais
             posic=self.getLeafesBelow(node)
-            for i in posic:#pode ser encontrado em varios sitios            
+            for i in posic: #pode ser encontrado em varios sitios            
                 tam=int(i)+int(pos)
                 print ("O padrao foi encontado, de forma parcial, da posicao %s ate a posicao %s da sequencia" %posic,tam)                   
-        else:#padrao nao encontrado ou encontrado apenas num tamanho reduzido
+        else: #padrao nao encontrado ou encontrado apenas num tamanho reduzido
             print ("O padrao nao foi encontrado")
         return posic
     
@@ -198,33 +198,33 @@ class CompactTree:
 ###Retirar as sequencias das bases de dados (padrao-gene) e sufixos (genoma)###
 ###############################################################################        
 
-#dado um gi ou um nome da especie a funcao retorna a sequencia desse dado input, em formato de texto
+#dado um GI ou um nome da especie a funcao retorna a sequencia desse dado input, em formato de texto
       
     def get_seq_from_genome(self,especie=0,idn=0):
         if idn==0:
             gf=self.get_genome_file(especie)
         elif especie==0:
             gf=self.get_genome_file(0,idn)
-        f=open(gf, 'r')#a funcao chamada retorna o nome do ficheiro criado, chamado aqui
+        f=open(gf, 'r') #a funcao chamada retorna o nome do ficheiro criado, chamado aqui
         sequence = SeqIO.read(f, 'fasta')
-        print ("A sequencia usada para construir a arvore sera:\n"+str(sequence.id))#para informar qual sera a sequencia usada
+        print ("A sequencia usada para construir a arvore sera:\n"+str(sequence.id)) #para informar qual sera a sequencia usada
         return str(sequence.seq).strip(" ")
         
-#dado um gi ou um nome da especia a funcao vai extrair a sequencia da base dados no ncbi e guarda-la num ficheiro, retornando o seu nome
+#dado um GI ou um nome da especie a funcao vai extrair a sequencia da base dados no ncbi e guarda-la num ficheiro, retornando o seu nome
         
     def get_genome_file(self,especie=0,idn=0):
         return_filename=""        
-        if idn==0:#damos a especie
+        if idn==0: #damos a especie
             hand=Entrez.esearch(db='nucleotide',term=especie+"[ORGN]",retmax=100,retype="gb",retmode="text")
             results=Entrez.read(hand)
-            idnum=results["IdList"][0]#primeiro elemento da lista de resultados
+            idnum=results["IdList"][0] #primeiro elemento da lista de resultados
             handle=Entrez.efetch(db='nucleotide',rettype="fasta",retmode="text",id=idnum)
             read=SeqIO.read(handle,"fasta")
             name="genome_"+str(especie).strip(" ")+".fasta"
             SeqIO.write(read,name, "fasta")
             handle.close()
             return_filename+=name
-        elif especie==0:#damos o id a funcao
+        elif especie==0: #damos o id a funcao
             handle=Entrez.efetch(db='nucleotide',rettype="fasta",retmode="text",id=idn)
             read=SeqIO.read(handle,"fasta")
             name="genome_"+str(idn).strip(" ")+".fasta"
@@ -233,7 +233,7 @@ class CompactTree:
             return_filename+=name
         return return_filename
 
-#dado um gi ou um nome do gene a funcao retorna a sequencia desse dado input, em formato de texto
+#dado um GI ou um nome do gene a funcao retorna a sequencia desse dado input, em formato de texto
 
     def get_seq_from_gene(self,gene=0,idn=0):
         if idn==0:
@@ -243,31 +243,31 @@ class CompactTree:
             print (gf)
         f=open(gf, 'r')
         sequence = SeqIO.read(f, 'fasta')
-        print ("A sequencia do gene pesquisado é:\n"+str(sequence.id))#para informar qual sera a sequencia usada
+        print ("A sequencia do gene pesquisado é:\n"+str(sequence.id)) #para informar qual sera a sequencia usada
         return str(sequence.seq).strip(" ")
        
    
-    def get_gene_file(self,gene=0,idn=0):#cria o ficheiro e da o nome a funcao anterior para retirar a sequencia do ficheiro
+    def get_gene_file(self,gene=0,idn=0): #cria o ficheiro e da o nome a funcao anterior para retirar a sequencia do ficheiro
         return_filename=""        
-        if idn==0:#damos o nome da especie a funcao 
+        if idn==0: #damos o nome da especie a funcao 
             hand=Entrez.esearch(db='gene',term=gene+"[sym]",retmax=100,retype="gb",retmode="text")
             results=Entrez.read(hand)
-            idnum=results["IdList"][0]#primeiro elemento da lista de resultados
+            idnum=results["IdList"][0] #primeiro elemento da lista de resultados
             handl=Entrez.efetch(db='gene',rettype="gb",retmode="xml",id=idnum)
             record=Entrez.read(handl)
-            to=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_to']#para
+            to=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_to'] #para
 
-            desde=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_from']#de
+            desde=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_from'] #de
 
             identif=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_id']['Seq-id']['Seq-id_gi']#gi
                         
-            handle = Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=identif, seq_start=desde, seq_stop=to )#depois de termos o id, e os valores onde comeca e acaba a seq vamos busca-la
+            handle = Entrez.efetch(db="nucleotide", rettype="fasta", retmode="text", id=identif, seq_start=desde, seq_stop=to ) #depois de termos o id, e os valores onde comeca e acaba a seq vamos busca-la
             read=SeqIO.read(handle,"fasta")
             name="gene_"+str(gene).strip(" ")+".fasta"
             SeqIO.write(read,name, "fasta")
             handle.close()
             return_filename+=name
-        elif gene==0:#damos o gi do gene
+        elif gene==0: #damos o GI do gene
             handl=Entrez.efetch(db='gene',rettype="gb",retmode="xml",id=idn)
             record=Entrez.read(handl)
             to=record[0]['Entrezgene_comments'][5]['Gene-commentary_comment'][0]['Gene-commentary_comment'][0]['Gene-commentary_seqs'][0]['Seq-loc_int']['Seq-interval']['Seq-interval_to']#para
@@ -301,28 +301,28 @@ def main():
         op=input("O que pretende fazer? ")
         if op==1:
             seq=input('\nInsira a sequencia para a construcao da arvore:\n')
-            st.suffixTrieFromSeq(str(seq))#dada a seq vamos construir a arvore
-            st.s_to_c_tree()#e comprimi-la
+            st.suffixTrieFromSeq(str(seq)) #dada a seq vamos construir a arvore
+            st.s_to_c_tree() #e comprimi-la
             print('\Arvore criada com sucesso\n')
         elif op=="2":
             opt=input('\nPretende a pesquisa de um genoma na base de dados?(S ou N):\n').upper()
             if opt=='S':
                   opt1=input('\nPossui o GI?(S ou N):\n').upper()
-                  if opt1=='S':#procura pelo GI
+                  if opt1=='S': #procura pelo GI
                       idn=input('\n Introduza o GI:\n').upper()
                       seq=st.get_seq_from_genome(0,str(idn))
                       st.suffixTrieFromSeq(seq)
                       st.s_to_c_tree()
                       print('\nArvore criada com sucesso\n')
                      
-                  if opt1=='N':#procura pela especie
+                  if opt1=='N': #procura pela especie
                       especie=input('\n Introduza o nome da especie:\n')
                       seq=st.get_seq_from_genome(especie)
                       st.suffixTrieFromSeq(seq)
                       st.s_to_c_tree()
                       print('\nArvore criada com sucesso\n')
 
-            if opt=='N':#entao e necessario dar o ficheiro fasta da sequencia
+            if opt=='N': #entao e necessario dar o ficheiro fasta da sequencia
                 file_fasta=input('\nIntroduza o nome do ficheiro FASTA (sem extensao):\n')
                 seq=st.get_seq_from_genome(str(file_fasta)+'.fasta')
                 st.suffixTrieFromSeq(seq)
@@ -396,17 +396,17 @@ if __name__=='__main__':
         seq="TACT"
         st=CompactTree()
         st.suffixTrieFromSeq(seq)
-    #    print st.findPattern("TA")
-      #  print st.InitialSearch()
+        #print st.findPattern("TA")
+        #print st.InitialSearch()
         #print st.getPredecessors(9)#st.print_tree()       
         #print st.text_with_cut(6,9)
         #print st.getLastNodeBelow(2)
         #print st.encurtar(2)
         #print st.s_to_c_tree()
         #print st.text_with_cut(2,5)
-       # print st.bifurcado(2)
+        #print st.bifurcado(2)
         #print st.findPattern("")
-       # print st.pesquisa_genoma()
+        #print st.pesquisa_genoma()
         #a=Entrez.einfo()
         #print (Entrez.read(a))
         #print st.get_genome_file("escherichia coli")
