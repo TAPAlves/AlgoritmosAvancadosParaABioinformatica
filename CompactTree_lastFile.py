@@ -15,9 +15,12 @@ class CompactTree:
         self.nodes={0:(-1,{})}#root node
         self.num=0 #numero de no
 
-##imprimir a arvore
+
         
     def print_tree(self):
+        '''
+        Imprimir a arvore.
+        '''
         for k in self.nodes.keys():
             if self.nodes[k][0]<0:
                 print (str(k)+"->"+str(self.nodes[k][1]))
@@ -28,16 +31,19 @@ class CompactTree:
 ###Construcao da arvore de compactacao###
 ###########################################################
 
-#adicionar um no a arvore
-    
     def addNode(self,origin,symbol,leafnum=-1):
+        '''
+        Funcao que adiciona um no a arvore.
+        '''
         self.num+=1
         self.nodes[origin][1][symbol]=self.num
         self.nodes[self.num]=(leafnum,{})
 
-#adicionar um sufixo (palavra)
-         
+        
     def addSufix(self,p,sufnum):
+        '''
+        Funcao que cria um path na árvore dado um sufixo.
+        '''
         pos=0
         node=0
         while pos<len(p):
@@ -50,16 +56,19 @@ class CompactTree:
             pos+=1
 
 
-#apartir de uma sequencia criar uma arvore de sufixos
-
     def suffixTrieFromSeq(self,text):
+        '''
+        Funcao que cria uma arvore de sufixos a partir de uma sequencia.
+        '''
         t=text+"$"
         for i in range (len(t)):
             self.addSufix(t[i:],i)
 
-            
-#para saber se e bifurcado ou nao, dado o no respetivo
+
     def bifurcado(self, node):
+        '''
+        Funcao que dado um no diz-nos se este e bifurcado, se nao e ainda se e uma folha.
+        '''
         try:
             if len(self.nodes[node][1].keys())>1:#muitas chaves, logo bifurcado
                 return True
@@ -70,10 +79,13 @@ class CompactTree:
         except:
             return False
         
-
-#funcao que retira o texto, dados os nos iniciais e o caminho para atingir o no final do ramo em questao (em forma de lista)
-    
+        
     def text_with_cut (self,init,lista):
+        '''
+        Funcao que dado o no inicial e o caminho ate ao final do ramo (em forma de lista),
+        retorna o texto em forma de string, eliminando todos os nos desse caminho, a excecao do 
+        ultimo da lista (que pode ser uma folha ou um no bifurcado).
+        '''
         text=""
         keys=self.nodes[init][1].keys()#todas as chaves do primeiro no
         for key in keys:#por cada uma:
@@ -91,9 +103,13 @@ class CompactTree:
                     del self.nodes[lista[i]]#apaga os nos do dicionario
         return text
             
-#nodos sao eliminados na funcao anterior mas temos de ligar o no inicial ao no final
             
     def encurtar(self,nod):
+        '''
+        Funcao que dado um no inicial, com o recurso a funcao text_with_cut e getLastNodeBelow_main, 
+        pesquisa o percurso a compactar, e adiciona o texto relativo a uniao desses nos nao bifurcados numa 
+        unica chave, sendo o no final uma folha ou um no bifurcado. O no inicial pode ser um no bifurcado.
+        '''
         dicio={}
         nos=self.getLastNodeBelow_main(nod)#vai buscar os caminhos em forma de lista (no bifurcado: lista de listas porque um no bifurcado tem varios caminhos)
         for stop in range(len(nos)):
@@ -103,10 +119,11 @@ class CompactTree:
         for key in dicio.keys():#acrescentar as chaves do dicionario temporario criado ao dicionario do no na arvore
             self.nodes[nod][1][key]=dicio[key]
         
-       
-#cria uma lista do caminho, dado um no nao bifurcado
-       
+             
     def getLastNodeBelow(self,node):#so aceita nos nao biforcados iniciais
+        '''
+        Funcao que dado um no nao bifurcado, cria uma lista do caminho correspondente a esse no.
+        '''
         res=[]
         if self.nodes[node][0]>=0:
             res.append(node)#ultimo no (correspondente a uma folha)
@@ -121,9 +138,12 @@ class CompactTree:
         return res
         
 
-#cria a lista do caminho mas, sendo no bifurcado retorna uma matriz de listas, sendo cada uma correspondente as opcoes do no
-
     def getLastNodeBelow_main(self,no):#bifurcado ou nao
+        '''
+        Funcao que cria a lista do caminho correspondente a esse no, podendo ele ser bifurcado ou nao. 
+        Sendo um no bifurcado esta funcao retorna uma matriz (lista de listas),
+        em que cada uma diz respeito as diversas opcoes em termos de caminhos desse no.
+        '''
         res=[]
         keys=self.nodes[no][1].keys()
         if len(keys)==1:#se nao for bifurcado
@@ -137,8 +157,10 @@ class CompactTree:
         return res
 
 
-#transforma uma arvore de sufixos numa arvore de compactacao
     def s_to_c_tree(self):
+        '''
+        Funcao que transforma uma arvore de sufixos numa arvore de compactacao.
+        '''
         num=0
         while num is not self.num:
             bifor=self.bifurcado(num)
@@ -155,9 +177,10 @@ class CompactTree:
 ###Algoritmo de pesquisa###
 ########################################################
 
-#encontar um padrao na arvore
-
     def findPattern(self,pattern):
+        '''
+        Funcao que encontra um padrao na arvore.
+        '''
         pos=0
         node=0
         while pos<len(pattern)-1:
@@ -180,9 +203,11 @@ class CompactTree:
             print ("O padrao nao foi encontrado")
         return posic
     
-#retorna a folha ou folhas abaixo de um dado no
     
     def getLeafesBelow(self,node):
+        '''
+        Funcao que retorna a(s) folha(s) abaixo de um dado no.
+        '''
         res=[]
         if self.nodes[node][0]>=0:
             res.append(self.nodes[node][0])
@@ -198,9 +223,11 @@ class CompactTree:
 ###Retirar as sequencias das bases de dados (padrao-gene) e sufixos (genoma)###
 ###############################################################################        
 
-#dado um gi ou um nome da especie a funcao retorna a sequencia desse dado input, em formato de texto
-      
     def get_seq_from_genome(self,especie=0,idn=0):
+        '''
+        Funcao que dado um GI ou um nome de uma especie, 
+        vai retornar a sequencia desse dado input, em formato de texto.
+        '''
         if idn==0:
             gf=self.get_genome_file(especie)
         elif especie==0:
@@ -210,9 +237,12 @@ class CompactTree:
         print ("A sequencia usada para construir a arvore sera:\n"+str(sequence.id))#para informar qual sera a sequencia usada
         return str(sequence.seq).strip(" ")
         
-#dado um gi ou um nome da especia a funcao vai extrair a sequencia da base dados no ncbi e guarda-la num ficheiro, retornando o seu nome
         
     def get_genome_file(self,especie=0,idn=0):
+        '''
+        Funcao que dado um GI ou um nome de uma especie, 
+        extrai a sequência da base dados no NCBI e guarda-a num ficheiro em formato FASTA, retornando o seu nome.
+        '''
         return_filename=""        
         if idn==0:#damos a especie
             hand=Entrez.esearch(db='nucleotide',term=especie+"[ORGN]",retmax=100,retype="gb",retmode="text")
@@ -233,9 +263,12 @@ class CompactTree:
             return_filename+=name
         return return_filename
 
-#dado um gi ou um nome do gene a funcao retorna a sequencia desse dado input, em formato de texto
 
     def get_seq_from_gene(self,gene=0,idn=0):
+        '''
+        Funcao que dado um GI ou um nome de um gene, 
+        vai retornar a sequencia desse dado input, em formato de texto.
+        '''
         if idn==0:
             gf=self.get_gene_file(gene)
         elif gene==0:
@@ -247,7 +280,11 @@ class CompactTree:
         return str(sequence.seq).strip(" ")
        
    
-    def get_gene_file(self,gene=0,idn=0):#cria o ficheiro e da o nome a funcao anterior para retirar a sequencia do ficheiro
+    def get_gene_file(self,gene=0,idn=0):
+        '''
+        Funcao que dado um GI ou um nome de um gene, 
+        extrai a sequencia da base dados no NCBI e guarda-a num ficheiro FASTA, retornando o seu nome.
+        '''
         return_filename=""        
         if idn==0:#damos o nome da especie a funcao 
             hand=Entrez.esearch(db='gene',term=gene+"[sym]",retmax=100,retype="gb",retmode="text")
@@ -292,6 +329,7 @@ class CompactTree:
 def main():
     st=CompactTree()    
     while True:
+        print ("\nRESPONDA SEMPRE DENTRO DE ASPAS, A EXCEPÇÂO DA SELECAO DO MENU (INTEIROS)\n\n" )
         print("1 - Contrucao de arvore de sufixos apartir de uma sequencia ja conhecida")
         print("2 - Construcao da arvore de sufixos apartir de um ficheiro FASTA")
         print("3 - Extracao de uma sequencia da base de dados")
@@ -304,7 +342,7 @@ def main():
             st.suffixTrieFromSeq(str(seq))#dada a seq vamos construir a arvore
             st.s_to_c_tree()#e comprimi-la
             print('\Arvore criada com sucesso\n')
-        elif op=="2":
+        elif op==2:
             opt=input('\nPretende a pesquisa de um genoma na base de dados?(S ou N):\n').upper()
             if opt=='S':
                   opt1=input('\nPossui o GI?(S ou N):\n').upper()
@@ -329,7 +367,7 @@ def main():
                 st.s_to_c_tree()
                 print('\nArvore criada com sucesso\n')
             
-        elif op=="3":
+        elif op==3:
             word=input('\nPretende extrair um gene ou um genoma?').upper()
             if word=='GENE':
                 opt1=input('\nPossui o GI?(S ou N):\n').upper()
@@ -354,7 +392,7 @@ def main():
                     st.get_seq_from_genome(especie)
                     print ('\nGenoma extraido com sucesso para a diretoria de trabalho\n')
                     
-        elif op=="4":
+        elif op==4:
             opt=input('\nPretende a pesquisa de um gene na base de dados?(S ou N):\n').upper()
             if opt=='S':
                   opt1=input('\nPossui o GI?(S ou N):\n').upper()
@@ -373,10 +411,10 @@ def main():
                 inp_seq=input('\nIntroduza a sequencia a pesquisar?\n')
                 st.findPattern(str(inp_seq))
               
-        elif op=="5":
+        elif op==5:
             st.print_tree()
             
-        elif op=="6":
+        elif op==6:
             print("\n Adeus!")
             break
         else:
@@ -384,55 +422,5 @@ def main():
             
 
 if __name__=='__main__':
-    
-    def test():
-        seq="TACTA"
-        st=CompactTree()
-        st.suffixTrieFromSeq(seq)
-        st.print_tree()
-  #  test()
-    
-    def test2():
-        seq="TACT"
-        st=CompactTree()
-        st.suffixTrieFromSeq(seq)
-    #    print st.findPattern("TA")
-      #  print st.InitialSearch()
-        #print st.getPredecessors(9)#st.print_tree()       
-        #print st.text_with_cut(6,9)
-        #print st.getLastNodeBelow(2)
-        #print st.encurtar(2)
-        #print st.s_to_c_tree()
-        #print st.text_with_cut(2,5)
-       # print st.bifurcado(2)
-        #print st.findPattern("")
-       # print st.pesquisa_genoma()
-        #a=Entrez.einfo()
-        #print (Entrez.read(a))
-        #print st.get_genome_file("escherichia coli")
-        #print st.get_gene_file("idh1")#id tem de ser da bd gene
-        #print st.getLastNodeBelow_main(1)
-    #test2()
 
-    def test3():
-        seq="TCAA"
-        st=CompactTree()
-        st.suffixTrieFromSeq(seq)
-        #print(st.bifurcado(2))##
-        #print st.text_with_cut(1,13)##
-        #print st.print_tree()##corta bem os ficheiros 
-        #print (st.encurtar(0))
-        #print (st.print_tree())
-        #print type('drt')
-        #print st.getLastNodeBelow()
-        #print st.getLastNodeBelow_main(1)
-        st.s_to_c_tree()
-        #(st.print_tree())
-        st.findPattern('CAA$')
-        #print st.getLeafesBelow(1)
-        #print st.get_genome_file('escherichia coli')
-        
-        
-        
-    #main()
-    test3()
+    main()
